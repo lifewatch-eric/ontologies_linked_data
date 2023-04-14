@@ -318,9 +318,6 @@ module LinkedData
       attribute :publisher, namespace: :dct, extractedMetadata: true, metadataMappings: ["dc:publisher", "schema:publisher"], display: "license",
                 helpText: "An entity responsible for making the ontology available."
 
-      attribute :identifier, namespace: :dct, extractedMetadata: true, metadataMappings: ["dc:identifier", "skos:notation", "adms:identifier"],
-                helpText: "An unambiguous reference to the ontology. Use the ontology URI if not provided in the ontology metadata."
-
       attribute :source, namespace: :dct, enforce: [:concatenate], extractedMetadata: true, display: "links",
                 metadataMappings: ["dc:source", "prov:wasInfluencedBy", "prov:wasDerivedFrom", "pav:derivedFrom", "schema:isBasedOn", "nkos:basedOn", "mod:sourceOntology"],
                 helpText: "A related resource from which the described resource is derived."
@@ -476,6 +473,9 @@ module LinkedData
                                  "DataPaper", "Dataset", "Dissertation", "Event", "Image", "InteractiveResource",
                                  "Journal", "JournalArticle", "Model", "OutputManagementPlan", "PeerReview", "PhysicalObject",
                                  "Preprint", "Report", "Service", "Software", "Sound", "Standard", "Text", "Workflow", "Other"]
+      attribute :identifier, namespace: :datacite, extractedMetadata: true, metadataMappings: ["dc:identifier", "skos:notation", "adms:identifier"],
+                helpText: "An unambiguous reference to the ontology. Use the ontology URI if not provided in the ontology metadata."
+
       # Hypermedia settings
       embed :contact, :ontology
       embed_values :submissionStatus => [:code], :hasOntologyLanguage => [:acronym]
