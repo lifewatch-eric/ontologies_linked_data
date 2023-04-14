@@ -467,6 +467,13 @@ module LinkedData
       #Link to metrics
       attribute :metrics, enforce: [:metrics]
 
+      #datacite metadata
+      attribute :resourceTypeGeneral,  extractedMetadata: true, metadataMappings: ["dc:type", "dct:type"], namespace: :datacite,
+                enforcedValues: ["Audiovisual", "Book", "BookChapter", "Collection",
+                                 "ComputationalNotebook", "ConferencePaper", "ConferenceProceeding",
+                                 "DataPaper", "Dataset", "Dissertation", "Event", "Image", "InteractiveResource",
+                                 "Journal", "JournalArticle", "Model", "OutputManagementPlan", "PeerReview", "PhysicalObject",
+                                 "Preprint", "Report", "Service", "Software", "Sound", "Standard", "Text", "Workflow", "Other"]
       # Hypermedia settings
       embed :contact, :ontology
       embed_values :submissionStatus => [:code], :hasOntologyLanguage => [:acronym]
