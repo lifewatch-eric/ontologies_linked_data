@@ -4,7 +4,7 @@ module LinkedData
       model :title, name_with: lambda { |cc| uuid_uri_generator(cc) }
       attribute :title, enforce: [:existence]
       attribute :lang, enforce: [:existence]
-      attribute :titleType, enforce: [:existence]
+      attribute :titleType, enforce: [:existence], enforcedValues: ["AlternativeTitle", "Subtitle", "TranslatedTitle" , "Other"]
 
       embedded true
     end
