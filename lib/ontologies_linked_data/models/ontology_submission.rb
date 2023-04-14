@@ -475,6 +475,7 @@ module LinkedData
                                  "Preprint", "Report", "Service", "Software", "Sound", "Standard", "Text", "Workflow", "Other"]
       attribute :identifier, namespace: :datacite, extractedMetadata: true, metadataMappings: ["dc:identifier", "skos:notation", "adms:identifier"],
                 helpText: "An unambiguous reference to the ontology. Use the ontology URI if not provided in the ontology metadata."
+      attribute :identifierType, namespace: :datacite, extractedMetadata: true, enforcedValues: ["None", "DOI", "Other"]
 
       # Hypermedia settings
       embed :contact, :ontology
