@@ -6,6 +6,7 @@ require 'cgi'
 require 'benchmark'
 require 'csv'
 require 'fileutils'
+require 'date'
 
 module LinkedData
   module Models
@@ -468,6 +469,7 @@ module LinkedData
       attribute :metrics, enforce: [:metrics]
 
       #datacite metadata
+      attribute :publicationYear, namespace: :datacite, metadataMappings: ["dc:date", "dcterms:issued"], handler: :released_year
       attribute :resourceTypeGeneral,  extractedMetadata: true, metadataMappings: ["dc:type", "dct:type"], namespace: :datacite,
                 enforcedValues: ["Audiovisual", "Book", "BookChapter", "Collection",
                                  "ComputationalNotebook", "ConferencePaper", "ConferenceProceeding",
@@ -1999,9 +2001,21 @@ eos
       end
 
 
+      def released_year
+        self.bring :released if self.bring?(:released_year)
+        date_string = self.released
+
+        return nil unless date_string
+
+        begin
+          date_object = Date.parse(date_string)
+          date_object.year
+        rescue
+          nil
+        end
+      end
+
       private
-
-
       def owlapi_parser_input
         path = if zipped?
                  self.zip_folder
