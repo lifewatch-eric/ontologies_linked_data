@@ -172,7 +172,7 @@ module LinkedData
       conf.add_namespace(:umls, RDF::Vocabulary.new("http://bioportal.bioontology.org/ontologies/umls/"))
       conf.add_namespace(:door, RDF::Vocabulary.new("http://kannel.open.ac.uk/ontology#"))
       conf.add_namespace(:dct, RDF::Vocabulary.new("http://purl.org/dc/terms/"))
-
+      conf.add_namespace(:datacite, RDF::Vocabulary.new("http://datacite.org/schema/kernel-4#"))
       conf.add_namespace(:void, RDF::Vocabulary.new("http://rdfs.org/ns/void#"))
       conf.add_namespace(:foaf, RDF::Vocabulary.new("http://xmlns.com/foaf/0.1/"))
       conf.add_namespace(:vann, RDF::Vocabulary.new("http://purl.org/vocab/vann/"))
