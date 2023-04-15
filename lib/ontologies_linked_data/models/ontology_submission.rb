@@ -468,11 +468,7 @@ module LinkedData
       #datacite metadata
       attribute :publicationYear, namespace: :datacite, metadataMappings: ["dc:date", "dcterms:issued"], handler: :released_year
       attribute :resourceTypeGeneral,  extractedMetadata: true, metadataMappings: ["dc:type", "dct:type"], namespace: :datacite,
-                enforcedValues: ["Audiovisual", "Book", "BookChapter", "Collection",
-                                 "ComputationalNotebook", "ConferencePaper", "ConferenceProceeding",
-                                 "DataPaper", "Dataset", "Dissertation", "Event", "Image", "InteractiveResource",
-                                 "Journal", "JournalArticle", "Model", "OutputManagementPlan", "PeerReview", "PhysicalObject",
-                                 "Preprint", "Report", "Service", "Software", "Sound", "Standard", "Text", "Workflow", "Other"]
+                enforcedValues: ["Dataset", "Other"]
       attribute :identifier, namespace: :datacite, extractedMetadata: true, metadataMappings: ["dc:identifier", "skos:notation", "adms:identifier"],
                 helpText: "An unambiguous reference to the ontology. Use the ontology URI if not provided in the ontology metadata."
       attribute :identifierType, namespace: :datacite, extractedMetadata: true, enforcedValues: ["None", "DOI", "Other"]
