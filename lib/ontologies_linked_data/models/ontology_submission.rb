@@ -477,6 +477,7 @@ module LinkedData
                 helpText: "An unambiguous reference to the ontology. Use the ontology URI if not provided in the ontology metadata."
       attribute :identifierType, namespace: :datacite, extractedMetadata: true, enforcedValues: ["None", "DOI", "Other"]
 
+      attribute :titles, namespace: :datacite, enforce: [:existence, :title, :list], label: "Titles", metadataMappings: ["dc:title", "dcterms:title"], helpText: "A name or title by which a resource is known. May be the title of a dataset or the name of a piece of software."
       # Hypermedia settings
       embed :contact, :ontology
       embed_values :submissionStatus => [:code], :hasOntologyLanguage => [:acronym]
