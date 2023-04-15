@@ -469,6 +469,7 @@ module LinkedData
       attribute :publicationYear, namespace: :datacite, metadataMappings: ["dc:date", "dcterms:issued"], handler: :released_year
       attribute :resourceTypeGeneral,  extractedMetadata: true, metadataMappings: ["dc:type", "dct:type"], namespace: :datacite,
                 enforcedValues: ["Dataset", "Other"]
+      attribute :resourceType, namespace: :datacite, extractedMetadata: true, metadataMappings: ["dc:type", "dct:type"]
       attribute :identifier, namespace: :datacite, extractedMetadata: true, metadataMappings: ["dc:identifier", "skos:notation", "adms:identifier"],
                 helpText: "An unambiguous reference to the ontology. Use the ontology URI if not provided in the ontology metadata."
       attribute :identifierType, namespace: :datacite, extractedMetadata: true, enforcedValues: ["None", "DOI", "Other"]
