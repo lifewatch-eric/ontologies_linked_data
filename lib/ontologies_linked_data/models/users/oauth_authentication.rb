@@ -163,8 +163,8 @@ module LinkedData
             decode_cert = Base64.decode64(cert)
             rsa_public = OpenSSL::X509::Certificate.new(decode_cert).public_key
             begin
-              JWT.decode(jwt_token, rsa_public, true, { algorithm: 'HS256' })
-            rescue JWT::DecodeError
+              JWT.decode(jwt_token, rsa_public, false, { algorithm: 'HS256' }).first
+            rescue StandardError
               nil
             end
           end
@@ -187,5 +187,3 @@ module LinkedData
 
   end
 end
-
-
