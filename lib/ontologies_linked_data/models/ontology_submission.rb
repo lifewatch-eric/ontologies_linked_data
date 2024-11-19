@@ -773,11 +773,11 @@ module LinkedData
         end
 
         unless concept_schemes.empty?
-          page_data.delete_if { |c| Array(c.isInActiveScheme).empty? && !c.load_has_children }
+          page_data.delete_if { |c| Array(c.isInActiveScheme).empty? }
           if (page_data.size < size) && page_data.next_page
             page_data += children(cls, includes_param: includes_param, concept_schemes: concept_schemes,
-                                      concept_collections: concept_collections,
-                                 page: page_data.next_page, size: size)
+                                       concept_collections: concept_collections,
+                                       page: page_data.next_page, size: size)
           end
         end
 

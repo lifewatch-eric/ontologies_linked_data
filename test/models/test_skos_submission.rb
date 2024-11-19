@@ -152,7 +152,7 @@ SELECT ?children WHERE {
     refute_empty roots
 
     roots = sub.children(cls, concept_schemes: concept_schemes, size: 10)
-    assert_equal 1, roots.size, 'Children should be filtered by the scheme in this case only one'
+    assert_equal 0, roots.size, 'Children should be filtered by the scheme'
   end
 
 end
