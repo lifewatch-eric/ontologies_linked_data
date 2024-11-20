@@ -1150,7 +1150,7 @@ includedInDataCatalog:
     "https://cor.esipfed.org": "ESIP COR",
     "https://hetop.eu": "CISMeF HeTOP",
     "https://finto.fi": "FINTO",
-    "https://vocabs.ardc.edu.au": "ANDC RVA" ,
+    "https://vocabs.ardc.edu.au": "ARDC RVA" ,
     "https://vocab.nerc.ac.uk": "NVS" ,
     "https://terminologies.gfbio.org": "GFBIO TS",
     "https://loterre.fr": "Loterre",
@@ -1542,4 +1542,3 @@ logo:
 #Number of classes with a single child => Metrics object (classesWithOneChild)
 #Number of classes with more than 25 children => Metrics object (classesWithMoreThan25Children)
 #Number of classes with no definition => Metrics object (classesWithNoDefinition)
-
