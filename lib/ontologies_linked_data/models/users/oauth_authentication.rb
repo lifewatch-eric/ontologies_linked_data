@@ -61,6 +61,7 @@ module LinkedData
 
           def auth_create_user(user_data)
             user = User.new(user_data)
+            user.username = user.username.to_s.split('@').first || user.username
             user.password = SecureRandom.hex(16)
 
             return nil unless user.valid?
