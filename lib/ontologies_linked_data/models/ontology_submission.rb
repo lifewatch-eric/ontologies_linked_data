@@ -75,7 +75,7 @@ module LinkedData
       attribute :released, type: :date_time, enforce: [:existence]
       attribute :valid, namespace: :dct, type: :date_time
       attribute :curatedOn, namespace: :pav, type: %i[date_time list]
-      attribute :creationDate, namespace: :omv, type: :date_time, default: ->(x) { Date.today.to_datetime }
+      attribute :creationDate, namespace: :omv, type: :date_time, default: ->(x) { DateTime.now }
       attribute :modificationDate, namespace: :omv, type: :date_time
 
       # Person and organizations metadata
@@ -99,7 +99,7 @@ module LinkedData
       # Usage metadata
       attribute :knownUsage, namespace: :omv, type: :list
       attribute :designedForOntologyTask, namespace: :omv, type: %i[list uri]
-      attribute :hasDomain, namespace: :omv, type: :list, default: ->(s) { ontology_has_domain(s) }
+      attribute :hasDomain, namespace: :omv, type: :list
       attribute :coverage, namespace: :dct
       attribute :example, namespace: :vann, type: :list
 
@@ -181,7 +181,7 @@ module LinkedData
       end
 
       # Hypermedia settings
-      embed *%i[contact ontology metrics] + agents_attrs
+      embed *(%i[contact ontology metrics] + agents_attrs)
 
       def self.embed_values_hash
         out = {
@@ -239,7 +239,7 @@ module LinkedData
           begin
             m.ontology.bring(:acronym) if m.ontology.bring?(:acronym)
             ontology_link = "ontologies/#{m.ontology.acronym}"
-          rescue Exception => e
+          rescue Exception
             ontology_link = ""
           end
         end
@@ -288,7 +288,7 @@ module LinkedData
         name = filename.nil? ? File.basename(File.new(src).path) : File.basename(filename)
         # THIS LOGGER IS JUST FOR DEBUG - remove after NCBO-795 is closed
         logger = Logger.new(Dir.pwd + "/create_permissions.log")
-        if not Dir.exist? path_to_repo
+        unless Dir.exist? path_to_repo
           FileUtils.mkdir_p path_to_repo
           logger.debug("Dir created #{path_to_repo} | #{"%o" % File.stat(path_to_repo).mode} | umask: #{File.umask}") # NCBO-795
         end
@@ -303,7 +303,7 @@ module LinkedData
         conn = Goo.init_search_connection(:ontology_data)
         begin
           conn.delete_by_query("ontology_t:\"#{ontology}\"")
-        rescue StandardError => e
+        rescue StandardError
           # puts e.message
         end
         conn
@@ -342,7 +342,7 @@ module LinkedData
 
         begin
           sum_only = self.ontology.summaryOnly
-        rescue Exception => e
+        rescue Exception
           i = 0
           num_calls = LinkedData.settings.num_retries_4store
           sum_only = nil
@@ -356,7 +356,7 @@ module LinkedData
               self.ontology.bring(:summaryOnly)
               sum_only = self.ontology.summaryOnly
               puts "Success getting summaryOnly for #{self.id.to_s} after retrying #{i} times..."
-            rescue Exception => e1
+            rescue Exception
               sum_only = nil
 
               raise $!, "#{$!} after retrying #{i} times...", $!.backtrace if i == num_calls
@@ -542,7 +542,7 @@ module LinkedData
 
         begin
           metrics = CSV.read(m_path)
-        rescue Exception => e
+        rescue Exception
           logger.error("Unable to find metrics file: #{m_path}")
           logger.flush
         end
@@ -638,6 +638,7 @@ module LinkedData
         args.each { |e| options.merge!(e) if e.is_a?(Hash) }
         remove_index = options[:remove_index] ? true : false
         index_commit = options[:index_commit] == false ? false : true
+        skip_archive = options.key?(:skip_archiving) && options[:skip_archiving]
 
         super(*args)
         self.ontology.unindex_all_data(index_commit)
@@ -659,7 +660,7 @@ module LinkedData
           end
         end
 
-        self.archive(force: true)
+        self.archive(force: true) unless skip_archive
 
         # delete the folder and files
         FileUtils.remove_dir(self.data_folder) if Dir.exist?(self.data_folder)
@@ -853,7 +854,7 @@ module LinkedData
         parsable = true
         begin
           owlapi.parse
-        rescue StandardError => e
+        rescue StandardError
           parsable = false
         end
         parsable
@@ -893,7 +894,7 @@ module LinkedData
         ftp.login
         begin
           file_exists = ftp.size(uri.path) > 0
-        rescue Exception => e
+        rescue Exception
           # Check using another method
           path = uri.path.split("/")
           filename = path.pop

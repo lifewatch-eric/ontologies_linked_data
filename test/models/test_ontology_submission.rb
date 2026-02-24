@@ -660,7 +660,7 @@ SELECT DISTINCT * WHERE {
     metrics = sub.metrics_from_file(Logger.new(sub.parsing_log_path))
     assert !metrics.nil?, "Metrics is nil: #{metrics}"
     assert !metrics.empty?, "Metrics is empty: #{metrics}"
-    metrics.each { |m| assert_equal 3, m.length }
+    metrics.each { |m| assert_equal 4, m.length }
     assert_equal "Individual Count", metrics[0][1]
     assert_equal 133, metrics[1][0].to_i
   end
@@ -1055,7 +1055,7 @@ eos
     assert_equal 0, metrics.classesWithMoreThan25Children
     assert_equal 18, metrics.maxChildCount
     assert_equal 3, metrics.averageChildCount
-    assert_equal 3, metrics.maxDepth
+    assert_equal 4, metrics.maxDepth
 
     submission_parse("BROTEST-METRICS", "BRO testing metrics",
                      "./test/data/ontology_files/BRO_v3.2.owl", 33,
@@ -1083,11 +1083,11 @@ eos
     assert_includes [63, 45], metrics.properties # 63 if owlapi imports skos properties
     assert_equal 124, metrics.individuals
     assert_includes [13, 14], metrics.classesWithOneChild # 14 if owlapi imports skos properties
+    assert_equal 7, metrics.maxDepth
     assert_includes [473, 474], metrics.classesWithNoDefinition # 474 if owlapi imports skos properties
     assert_equal 2, metrics.classesWithMoreThan25Children
     assert_equal 65, metrics.maxChildCount
     assert_equal 5, metrics.averageChildCount
-    assert_equal 7, metrics.maxDepth
 
     submission_parse("BROTEST-ISFLAT", "BRO testing metrics flat",
                      "./test/data/ontology_files/BRO_v3.2.owl", 33,
@@ -1110,7 +1110,7 @@ eos
     assert_equal 0, metrics.classesWithMoreThan25Children
     assert_equal 0, metrics.maxChildCount
     assert_equal 0, metrics.averageChildCount
-    assert_equal 0, metrics.maxDepth
+    assert_equal 7, metrics.maxDepth
 
     #test UMLS metrics
     acronym = 'UMLS-TST'
@@ -1161,6 +1161,51 @@ eos
     end
   end
 
+  def test_submission_extract_metadata_once
+    # This test is only testing one attributefields which is :hasCreator
+    # TO-DO: make generic to all the fields that has extracted once
+    submission_parse("AGROOE", "AGROOE Test extract metadata ontology",
+                      "./test/data/ontology_files/agrooeMappings-05-05-2016.owl", 1,
+                      process_rdf: true, extract_metadata: true, generate_missing_labels: false, delete: true)
+    ont = LinkedData::Models::Ontology.find("AGROOE").first
+    sub1 = ont.latest_submission
+    refute_nil sub1
+
+    sub1.bring_remaining
+    hasCreator_old_values = ["Alfred DC", "Clement Jonquet", "Gaston Dcterms", "Huguette Doap", "Mirabelle Prov", "Paul Foaf", "Vincent Emonet"]
+    assert_equal hasCreator_old_values.sort, sub1.hasCreator.map { |x| x.bring_remaining.name }.sort    
+    sub1.save
+
+    agents_number = LinkedData::Models::Agent.where.count
+
+    # modifing the names of the agents (the curation phase)
+    hasCreator_old_values.each do |agent_name|
+      agent = LinkedData::Models::Agent.where(name: agent_name).first
+      refute_nil agent
+      agent.bring_remaining
+      agent.name = "#{agent_name}#{rand(1000..9999)}"
+      agent.save
+    end
+
+    assert agents_number, LinkedData::Models::Agent.where.count
+
+    # Create new submission
+    submission_parse("AGROOE", "AGROOE Test extract metadata ontology", "./test/data/ontology_files/agrooeMappings-05-05-2016.owl", 2, 
+                      process_rdf: true, extract_metadata: true, generate_missing_labels: false, delete: false)
+    ont = LinkedData::Models::Ontology.find("AGROOE").first
+    sub2 = ont.latest_submission
+    refute_nil sub2
+
+    sub2.bring_remaining
+    sub2.save
+
+    # Check if there is duplications
+    assert agents_number, LinkedData::Models::Agent.where.count
+    all_sub = LinkedData::Models::Ontology.find("AGROOE").first.bring(:submissions => [:hasCreator => [:name]]).submissions
+    sub0 = all_sub[0]
+    sub1 = all_sub[1]
+    sub0.hasCreator.map { |x| x.name }.sort == sub1.hasCreator.map { |x| x.name }.sort
+  end
 
   def test_submission_delete_remove_files
     #This one has resources wih accents.

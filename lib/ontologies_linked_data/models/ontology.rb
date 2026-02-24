@@ -49,6 +49,7 @@ module LinkedData
       attribute :flat, enforce: [:boolean]
       attribute :hasDomain, namespace: :omv, enforce: [:list, :category]
       attribute :summaryOnly, enforce: [:boolean]
+      attribute :sampleQueries, namespace: :mod, enforce: [:list, :string]
 
       attribute :acl, enforce: [:list, :user]
 
@@ -57,7 +58,7 @@ module LinkedData
       attribute :ontologyType, enforce: [:ontology_type], default: lambda { |record| LinkedData::Models::OntologyType.find("ONTOLOGY").include(:code).first }
 
       # Hypermedia settings
-      serialize_default :administeredBy, :acronym, :name, :summaryOnly, :flat, :ontologyType, :group, :hasDomain, :viewingRestriction, :viewOf, :views
+      serialize_default :administeredBy, :acronym, :name, :summaryOnly, :flat, :ontologyType, :group, :hasDomain, :viewingRestriction, :viewOf, :views, :sampleQueries
       links_load :acronym
       link_to LinkedData::Hypermedia::Link.new("submissions", lambda {|s| "ontologies/#{s.acronym}/submissions"}, LinkedData::Models::OntologySubmission.uri_type),
               LinkedData::Hypermedia::Link.new("properties", lambda {|s| "ontologies/#{s.acronym}/properties"}, "#{Goo.namespaces[:metadata].to_s}Property"),
@@ -204,7 +205,6 @@ module LinkedData
       end
 
       def highest_submission_id(options = {})
-        reload = options[:reload] || false
         status = options[:status] || :ready
 
         LinkedData::Models::Ontology.where.models([self])
@@ -217,7 +217,7 @@ module LinkedData
 
         begin
           subs = self.submissions
-        rescue Exception => e
+        rescue Exception
           i = 0
           num_calls = LinkedData.settings.num_retries_4store
           subs = nil
@@ -377,6 +377,7 @@ module LinkedData
         args.each {|e| options.merge!(e) if e.is_a?(Hash)}
         in_update = options[:in_update] || false
         index_commit = options[:index_commit] == false ? false : true
+        skip_archive = options.key?(:skip_archiving) && options[:skip_archiving]
 
         # remove notes
         self.bring(:notes)
@@ -416,7 +417,7 @@ module LinkedData
         self.bring(:acronym) if self.bring?(:acronym)
         unless self.submissions.nil?
           self.submissions.each do |s|
-            s.delete(in_update: in_update, remove_index: false)
+            s.delete(in_update: in_update, remove_index: false, skip_archiving: skip_archive)
           end
         end
 
